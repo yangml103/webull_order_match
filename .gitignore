@@ -1,0 +1,21 @@
+/curr_versions
+/Data
+**/Old Code*/
+**/Old Data*/
+/Round 3 Test Data
+concat_files.py
+exploratory.ipynb
+fifth_round_match_wbbuy_trfsell.py
+NYSE TRF_WBUL_WEBL_Contra Firm_07JUN2024.csv
+**/Presentation_Matching
+recon.xlsw
+**/trf*
+**/wb*.csv
+**/*.json
+**/*.csv
+**/*.pptx
+**/*.xlsx
+**/*.xls
+/__pycache__
+**/Tools
+
