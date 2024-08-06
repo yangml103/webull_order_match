@@ -92,14 +92,5 @@ file_path = 'Data/2024-06-07 files/nasdaq_trf_log_2024-06-07.log'
 parsed_messages = parse_fix_log(file_path)
 
 # Save the parsed messages to an Excel file
-output_file_path = 'parsed_messages_with_names3.csv'
+output_file_path = 'parsed_messages_with_names.csv'
 save_parsed_messages(parsed_messages, output_file_path)
-
-#485954
-# parsed - 487867
-# discrepancy comes from orders without a Side label - i.e. not buy or sell order
-
-# results - 2102 missing from final sell
-# 1185 missing from final buy
-# 3287 missing in total
-# 0.676% missing in total 

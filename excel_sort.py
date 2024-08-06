@@ -3,7 +3,7 @@ import pandas as pd
 # Sorts the parsed messages by buy/sell
 
 # Read the Excel file
-df = pd.read_csv('parsed_messages_with_names3.csv', low_memory=False)
+df = pd.read_csv('parsed_messages_with_names.csv', low_memory=False)
 
 # Read another CSV file and remove its first row
 df_additional = pd.read_csv('NYSE TRF_WBUL_WEBL_Contra Firm_07JUN2024.csv', low_memory=False)
