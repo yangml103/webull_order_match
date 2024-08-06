@@ -13,7 +13,7 @@ recon.xlsw
 **/wb*.csv
 **/*.json
 **/*.csv
-**/*.pptx
+**/Presentation_Matching.pptx
 **/*.xlsx
 **/*.xls
 /__pycache__
