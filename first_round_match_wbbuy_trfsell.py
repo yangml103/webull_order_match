@@ -7,7 +7,7 @@ import copy
 
 #NOTE: V8 had issues with matching, this file attempts to fix issues
 
-wb_buy_original = pd.read_csv('wb_buy_orders_test_filtered.csv')
+wb_buy_original = pd.read_csv('wb_buy_orders_filtered.csv')
 trf_sell_original = pd.read_csv('trf_original_sell_filtered.csv')
 
 
