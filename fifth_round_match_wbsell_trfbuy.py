@@ -166,23 +166,6 @@ for idx_wb in range(num_rows_wb):
         not_matching_wb.append(wb_row)
     
 
-    
-#flattened_trf_append_list = [item for sublist in trf_append_list for item in sublist]
-
-# # Iterate through trf_not_matching and add rows to matching_trf if they are in flattened_trf_append_list
-# for idx_trf in range(num_rows_trf):
-#     trf_row = trf_not_matching.iloc[idx_trf]
-#     broker = trf_row['ContraBroker']
-#     symbol = trf_row['Symbol']
-#     #price = trf_row['AvgPx']
-#     quantity = trf_row['CumQty']
-    
-#     if any((broker, symbol, quantity) == item for item in flattened_trf_append_list).any():
-#         matching_trf.append(trf_row)
-#         flattened_trf_append_list.remove((broker, symbol, quantity))
-#     else:
-#         not_matching_trf.append(trf_row)
-print(trf_append_list)
 for idx_trf1 in range(num_rows_trf):
     trf_row = trf_not_matching.iloc[idx_trf1]
     broker = trf_row['ContraBroker']
@@ -219,6 +202,8 @@ total_wb_rows = wb_not_matching.shape[0]
 total_trf_rows = trf_not_matching.shape[0]
 matching_wb_rows = matching_wb_df.shape[0]
 matching_trf_rows = matching_trf_df.shape[0]
+not_matching_wb_rows = not_matching_wb_df.shape[0]
+not_matching_trf_rows = not_matching_trf_df.shape[0]
 
 wb_matching_percentage = (matching_wb_rows / total_wb_rows) * 100
 trf_matching_percentage = (matching_trf_rows / total_trf_rows) * 100
@@ -231,3 +216,5 @@ print(f"Matching WB rows: {matching_wb_rows}")
 print(f"Matching TRF rows: {matching_trf_rows}")
 print(f"WB Matching Percentage: {wb_matching_percentage:.2f}%")
 print(f"TRF Matching Percentage: {trf_matching_percentage:.2f}%")
+print(f'Remaining WB rows: {not_matching_wb_rows}')
+print(f'Remaining TRF rows: {not_matching_trf_rows}')

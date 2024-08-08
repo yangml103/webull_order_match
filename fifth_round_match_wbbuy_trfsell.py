@@ -201,6 +201,8 @@ total_wb_rows = wb_not_matching.shape[0]
 total_trf_rows = trf_not_matching.shape[0]
 matching_wb_rows = matching_wb_df.shape[0]
 matching_trf_rows = matching_trf_df.shape[0]
+not_matching_wb_rows = not_matching_wb_df.shape[0]
+not_matching_trf_rows = not_matching_trf_df.shape[0]
 
 wb_matching_percentage = (matching_wb_rows / total_wb_rows) * 100
 trf_matching_percentage = (matching_trf_rows / total_trf_rows) * 100
@@ -213,3 +215,5 @@ print(f"Matching WB rows: {matching_wb_rows}")
 print(f"Matching TRF rows: {matching_trf_rows}")
 print(f"WB Matching Percentage: {wb_matching_percentage:.2f}%")
 print(f"TRF Matching Percentage: {trf_matching_percentage:.2f}%")
+print(f'Remaining WB rows: {not_matching_wb_rows}')
+print(f'Remaining TRF rows: {not_matching_trf_rows}')
