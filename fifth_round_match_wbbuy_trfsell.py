@@ -1,16 +1,14 @@
 import pandas as pd
 from collections import defaultdict
 import numpy as np
-# combinationSum3 doesn't use recursion to try to address maximum recursion depth issue 
 
 # Takes in nonmatching files after price point match program 'v4' wb buy trf sell 
-# Matches the non matching values using price point and volume
-# wb contains the sums, trf contains individual orders
-# keep running count of total and average price for trf, if running total and count == values in wb,
-# append all the values 
-# Repeat of third round match 
+# If a list of quantities in TRF can sum up to a value in wb, append the combinations 
+# to the matching list, and the related order in WB. 
 
-#NOTE WORKS!!!!!!!!!!!!!! BUT TAKES LIKE 5 MINUTES TO RUN 
+#NOTE THE COMBINATIONS ARE RANDOM AND MIGHT MISS SOME COMBINATIONS SINCE IT IS CAPPED AT 10,000 COMBOS 
+
+#NOTE TAKES LIKE 5 MINUTES TO RUN 
 
 def can_sum(nums, target):
     possible_sums = set([0])
@@ -151,22 +149,22 @@ for idx_wb in range(num_rows_wb):
     #print(f'trf_qty_list: {trf_qty_list}, \n, curr_wb_quantity: {curr_wb_quantity}, \n, seen: {seen}, \n, prevBroker: {prevBroker}, \n, prevSymbol: {prevSymbol}')
     #print(f'\n, {can_sum(trf_qty_list, curr_wb_quantity)}, \n, {combinationSum3(trf_qty_list, curr_wb_quantity)}')
     
-    if can_sum(trf_qty_list, curr_wb_quantity):
-        combinations = combinationSum3(trf_qty_list, curr_wb_quantity)
+    if can_sum(trf_qty_list, curr_wb_quantity): # check if it is possible for the values in the list to sum up to the current wb value 
+        combinations = combinationSum3(trf_qty_list, curr_wb_quantity) # get a combination that sum up to the current wb value 
         #print(f'combinations: {combinations}, len: {len(combinations)}')
         
         if len(combinations) > 0:
             matching_wb.append(wb_row)
             curr = combinations[0]
             for combination in curr:
-                trf_append_list.append([broker, symbol, combination])
-                seen.add(combination)
+                trf_append_list.append([broker, symbol, combination]) # keep track of the combinations from TRF to append later
+                seen.add(combination) # keep track of the combinations that have already been seen to prevent duplicates 
     else:
 
         not_matching_wb.append(wb_row)
     
 
-
+# Append the combinations from TRF to the matching list 
 for idx_trf1 in range(num_rows_trf):
     trf_row = trf_not_matching.iloc[idx_trf1]
     broker = trf_row['ContraBroker']
@@ -177,7 +175,7 @@ for idx_trf1 in range(num_rows_trf):
         br, sy, qu = val 
         if br == broker and sy == symbol and qu == quantity:
             matching_trf.append(trf_row)
-            trf_append_list.remove(val)
+            trf_append_list.remove(val) # remove the combination from the list so it doesn't get appended to the matching list again 
             found = True 
             break 
     if not found:

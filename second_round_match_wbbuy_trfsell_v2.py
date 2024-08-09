@@ -4,8 +4,8 @@ import copy
 
 # Takes in nonmatching files after brute force program
 # Matches the non matching values using price point and volume
-# Read in the dataframes - wb sell trf buy 
-#NOTE: V1 had issues with matching, this file attempts to fix issues 
+# If a value in wb is found in the cumulative values of trf, append all the rows that make up the value
+# vice versa for trf 
 
 wb_sell_not_matching = pd.read_csv('wb_buy_trf_sell_not_matching_wb_merge_new_filtered.csv')
 trf_sell_not_matching = pd.read_csv('wb_buy_trf_sell_not_matching_trf_merge_new_filtered.csv')
