@@ -10,3 +10,7 @@ Code for matching TRF and WB internal order data.
 4) Run run_all_programs.py
 
 
+Note:
+
+Estimated match rate for WB = 97%, TRF = 80%
+Run time ~ 10 minutes 
