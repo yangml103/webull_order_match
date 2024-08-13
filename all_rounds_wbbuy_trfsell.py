@@ -9,6 +9,8 @@ import os
 # This file is intended to be used to contain all the rounds of program code
 # for wb buy and trf sell
 
+#NOTE DOESNT WORK YET 
+
 wb_buy_original = pd.read_csv('wb_buy_orders_filtered.csv')
 trf_sell_original = pd.read_csv('trf_original_sell_filtered.csv')
 
@@ -832,8 +834,8 @@ trf_prices_dict_copy = trf_prices_dict # hack for the moment, could be cleaner
 
 not_matching_trf = []
 not_matching_wb = []
-num_rows_wb = wb_sell_not_matching.shape[0]
-num_rows_trf = trf_sell_not_matching.shape[0]
+num_rows_wb = wb_not_matching.shape[0]
+num_rows_trf = trf_not_matching.shape[0]
 
 
 trf_append_list = [] # keeps track of trf rows that need to be appended to trf match
