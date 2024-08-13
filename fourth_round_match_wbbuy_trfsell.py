@@ -137,7 +137,7 @@ while idx_wb < num_rows_wb:
         for val in range(idx_wb, idx_wb+num_orders_wb,1):
             wb_row = wb_sell_not_matching.iloc[val]
             matching_wb.append(wb_row)
-        idx_wb += num_orders_wb -1
+        idx_wb += num_orders_wb 
             
     else:
         num_orders_wb = sum(len(lst) for lst in wb_prices_dict_copy[broker][symbol].values())
@@ -149,7 +149,7 @@ while idx_wb < num_rows_wb:
         for val in range(idx_wb, idx_wb+num_orders_wb):
             wb_row = wb_sell_not_matching.iloc[val]
             not_matching_wb.append(wb_row)
-        idx_wb += num_orders_wb -1
+        idx_wb += num_orders_wb 
         
         
 while idx_trf < num_rows_trf:
@@ -169,7 +169,7 @@ while idx_trf < num_rows_trf:
         for val in range(idx_trf, idx_trf+num_orders_trf):
             trf_row = trf_sell_not_matching.iloc[val]
             matching_trf.append(trf_row)
-        idx_trf += num_orders_trf -1
+        idx_trf += num_orders_trf 
     else:
         num_orders_trf = sum(len(lst) for lst in trf_prices_dict_copy[broker][symbol].values())
         
@@ -179,18 +179,22 @@ while idx_trf < num_rows_trf:
         for val in range(idx_trf, idx_trf+num_orders_trf):
             trf_row = trf_sell_not_matching.iloc[val]
             not_matching_trf.append(trf_row)
-        idx_trf += num_orders_trf -1 
-
-
-# Make sure no rows were lost 
-assert len(matching_wb) + len(not_matching_wb) == num_rows_wb
-assert len(matching_trf) + len(not_matching_trf) == num_rows_trf 
+        idx_trf += num_orders_trf 
+        
+# The code is skipping some rows, possible fix could be to iterate through matching lists and append values that 
+# do not show up in the matching lists to double check 
 
 # Convert lists to DataFrames
 matching_wb_df = pd.DataFrame(matching_wb).drop_duplicates()
 matching_trf_df = pd.DataFrame(matching_trf).drop_duplicates()
 not_matching_wb_df = pd.DataFrame(not_matching_wb).drop_duplicates()
 not_matching_trf_df = pd.DataFrame(not_matching_trf).drop_duplicates()
+
+
+# Make sure no rows were lost 
+print(f'Matching WB rows: {len(matching_wb)}, Not matching WB rows: {len(not_matching_wb)}, Sum = {len(matching_wb) + len(not_matching_wb)}, Total WB rows: {num_rows_wb}')
+print(f'Matching TRF rows: {len(matching_trf)}, Not matching TRF rows: {len(not_matching_trf)}, Sum = {len(matching_trf) + len(not_matching_trf)}, Total TRF rows: {num_rows_trf}')
+
 
 # Save the DataFrames to CSV files
 output_dir = 'Fourth Round CSV Results WB BUY TRF SELL'

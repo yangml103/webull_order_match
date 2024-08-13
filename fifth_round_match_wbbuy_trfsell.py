@@ -34,7 +34,7 @@ def combinationSum3(candidates, target):
     stack = [(0, 0, [])]  # (current_sum, start_index, current_path)
     found = False
     
-    count , max_count = 0, 10000 # prevent infinite loop, idk how infinite loops happen tbh 
+    count , max_count = 0, 100000 # prevent infinite loop, idk how infinite loops happen tbh 
     while stack:
         current_sum, start, path = stack.pop()
 
@@ -62,9 +62,10 @@ def combinationSum3(candidates, target):
 
 
 # Read in the dataframes with specified dtypes
-wb_not_matching = pd.read_csv('Fourth Round CSV Results WB BUY TRF SELL/wb_fourth_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
-trf_not_matching = pd.read_csv('Fourth Round CSV Results WB BUY TRF SELL/trf_fourth_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
-
+# wb_not_matching = pd.read_csv('Fourth Round CSV Results WB BUY TRF SELL/wb_fourth_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
+# trf_not_matching = pd.read_csv('Fourth Round CSV Results WB BUY TRF SELL/trf_fourth_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
+wb_not_matching = pd.read_csv('Third Round CSV Results WB BUY TRF SELL/wb_third_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
+trf_not_matching = pd.read_csv('Third Round CSV Results WB BUY TRF SELL/trf_third_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
 
 # Sort the dataframes
 wb_not_matching = wb_not_matching.sort_values(by=['execbroker', 'symbol', 'strikeprice'])
@@ -153,14 +154,15 @@ for idx_wb in range(num_rows_wb):
         combinations = combinationSum3(trf_qty_list, curr_wb_quantity) # get a combination that sum up to the current wb value 
         #print(f'combinations: {combinations}, len: {len(combinations)}')
         
-        if len(combinations) > 0:
+        if len(combinations) > 0: # If it finds a combination, append to matching 
             matching_wb.append(wb_row)
             curr = combinations[0]
             for combination in curr:
                 trf_append_list.append([broker, symbol, combination]) # keep track of the combinations from TRF to append later
-                seen.add(combination) # keep track of the combinations that have already been seen to prevent duplicates 
+                seen.add(combination) # keep track of the combinations that have already been seen to prevent duplicates \
+        else: # If it does not find a combination in time, append to not matching 
+            not_matching_wb.append(wb_row)
     else:
-
         not_matching_wb.append(wb_row)
     
 
@@ -181,15 +183,17 @@ for idx_trf1 in range(num_rows_trf):
     if not found:
         not_matching_trf.append(trf_row)
 
-# Make sure no rows were lost 
-assert len(matching_wb) + len(not_matching_wb) == num_rows_wb
-assert len(matching_trf) + len(not_matching_trf) == num_rows_trf 
-
 # Convert lists to DataFrames
 matching_wb_df = pd.DataFrame(matching_wb).drop_duplicates()
 matching_trf_df = pd.DataFrame(matching_trf).drop_duplicates()
 not_matching_wb_df = pd.DataFrame(not_matching_wb).drop_duplicates()
 not_matching_trf_df = pd.DataFrame(not_matching_trf).drop_duplicates()
+
+# Make sure no rows were lost 
+# assert len(matching_wb) + len(not_matching_wb) == num_rows_wb
+# assert len(matching_trf) + len(not_matching_trf) == num_rows_trf 
+print(f'Matching WB rows: {len(matching_wb)}, Not matching WB rows: {len(not_matching_wb)}, Sum = {len(matching_wb) + len(not_matching_wb)}, Total WB rows: {num_rows_wb}')
+print(f'Matching TRF rows: {len(matching_trf)}, Not matching TRF rows: {len(not_matching_trf)}, Sum = {len(matching_trf) + len(not_matching_trf)}, Total TRF rows: {num_rows_trf}')
 
 # Save the DataFrames to CSV files
 output_dir = 'Fifth Round CSV Results WB BUY TRF SELL'

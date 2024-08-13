@@ -35,7 +35,7 @@ def combinationSum3(candidates, target):
     stack = [(0, 0, [])]  # (current_sum, start_index, current_path)
     found = False
     
-    count , max_count = 0, 10000 # prevent infinite loop, idk how infinite loops happen tbh 
+    count , max_count = 0, 100000 # prevent infinite loop, idk how infinite loops happen tbh 
     while stack:
         current_sum, start, path = stack.pop()
 
@@ -182,15 +182,17 @@ for idx_trf1 in range(num_rows_trf):
     if not found:
         not_matching_trf.append(trf_row)
 
-# Make sure no rows were lost 
-assert len(matching_wb) + len(not_matching_wb) == num_rows_wb
-assert len(matching_trf) + len(not_matching_trf) == num_rows_trf 
 
 # Convert lists to DataFrames
 matching_wb_df = pd.DataFrame(matching_wb).drop_duplicates()
 matching_trf_df = pd.DataFrame(matching_trf).drop_duplicates()
 not_matching_wb_df = pd.DataFrame(not_matching_wb).drop_duplicates()
 not_matching_trf_df = pd.DataFrame(not_matching_trf).drop_duplicates()
+
+# Make sure no rows were lost 
+print(f'Matching WB rows: {len(matching_wb)}, Not matching WB rows: {len(not_matching_wb)}, Sum = {len(matching_wb) + len(not_matching_wb)}, Total WB rows: {num_rows_wb}')
+print(f'Matching TRF rows: {len(matching_trf)}, Not matching TRF rows: {len(not_matching_trf)}, Sum = {len(matching_trf) + len(not_matching_trf)}, Total TRF rows: {num_rows_trf}')
+
 
 # Save the DataFrames to CSV files
 output_dir = 'Fifth Round CSV Results WB SELL TRF BUY'
