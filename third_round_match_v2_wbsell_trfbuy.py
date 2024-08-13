@@ -1,7 +1,7 @@
 import pandas as pd
 from collections import defaultdict
 import copy 
-
+import os
 # Takes in nonmatching files after price point match program 'v2' wb sell trf buy
 # Matches the non matching values using price point and volume
 # wb contains the sums, trf contains individual orders
@@ -9,8 +9,8 @@ import copy
 # append all the values 
 
 # Read in the dataframes 
-wb_sell_not_matching = pd.read_csv('wb_sell_trf_buy_not_matching_wb_merge_new_filtered_v2.csv')
-trf_sell_not_matching = pd.read_csv('wb_sell_trf_buy_not_matching_trf_merge_new_filtered_v2.csv')
+wb_sell_not_matching = pd.read_csv('Second Round CSV Results WB SELL TRF BUY/wb_second_round_not_match_wb_sell_trf_buy.csv')
+trf_sell_not_matching = pd.read_csv('Second Round CSV Results WB SELL TRF BUY/trf_second_round_not_match_wb_sell_trf_buy.csv')
 
 # Sort the dataframes
 wb_sell_not_matching = wb_sell_not_matching.sort_values(by=['execbroker', 'symbol', 'strikeprice'])
@@ -169,10 +169,13 @@ not_matching_wb_df = pd.DataFrame(not_matching_wb).drop_duplicates()
 not_matching_trf_df = pd.DataFrame(not_matching_trf).drop_duplicates()
 
 # Save the DataFrames to CSV files
-matching_wb_df.to_csv('wb_sell_trf_buy_matching_wb_merge_new_filtered_v3.csv', index=False)
-matching_trf_df.to_csv('wb_sell_trf_buy_matching_trf_merge_new_filtered_v3.csv', index=False)
-not_matching_wb_df.to_csv('wb_sell_trf_buy_not_matching_wb_merge_new_filtered_v3.csv', index=False)
-not_matching_trf_df.to_csv('wb_sell_trf_buy_not_matching_trf_merge_new_filtered_v3.csv', index=False)
+output_dir = 'Third Round CSV Results WB SELL TRF BUY'
+os.makedirs(output_dir, exist_ok=True)
+
+matching_wb_df.to_csv(os.path.join(output_dir, 'wb_third_round_match_wb_sell_trf_buy.csv'), index=False)
+matching_trf_df.to_csv(os.path.join(output_dir, 'trf_third_round_match_wb_sell_trf_buy.csv'), index=False)
+not_matching_wb_df.to_csv(os.path.join(output_dir, 'wb_third_round_not_match_wb_sell_trf_buy.csv'), index=False)
+not_matching_trf_df.to_csv(os.path.join(output_dir, 'trf_third_round_not_match_wb_sell_trf_buy.csv'), index=False)
 
 # Calculate statistics
 total_wb_rows = wb_sell_not_matching.shape[0]

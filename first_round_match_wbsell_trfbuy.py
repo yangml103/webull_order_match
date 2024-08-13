@@ -1,6 +1,7 @@
 import pandas as pd
 from collections import defaultdict
 import copy 
+import os
 # New version of brute force program, intended to be used before
 # price_point_match program 
 # Takes in filtered df's from remove_and_replace program
@@ -121,11 +122,12 @@ not_matching_wb_df = pd.DataFrame(not_matching_wb)
 not_matching_trf_df = pd.DataFrame(not_matching_trf)
 
 # Save the DataFrames to CSV files
-matching_wb_df.to_csv('wb_sell_trf_buy_matching_wb_merge_new_filtered.csv', index=False)
-matching_trf_df.to_csv('wb_sell_trf_buy_matching_trf_merge_new_filtered.csv', index=False)
-not_matching_wb_df.to_csv('wb_sell_trf_buy_not_matching_wb_merge_new_filtered.csv', index=False)
-not_matching_trf_df.to_csv('wb_sell_trf_buy_not_matching_trf_merge_new_filtered.csv', index=False)
-
+output_dir = 'First Round CSV Results WB SELL TRF BUY'
+os.makedirs(output_dir, exist_ok=True)
+matching_wb_df.to_csv(os.path.join(output_dir, 'wb_first_round_match_wb_sell_trf_buy.csv'), index=False)
+matching_trf_df.to_csv(os.path.join(output_dir, 'trf_first_round_match_wb_sell_trf_buy.csv'), index=False)
+not_matching_wb_df.to_csv(os.path.join(output_dir, 'wb_first_round_not_match_wb_sell_trf_buy.csv'), index=False)
+not_matching_trf_df.to_csv(os.path.join(output_dir, 'trf_first_round_not_match_wb_sell_trf_buy.csv'), index=False)
 
 # Calculate statistics
 total_wb_rows = wb_sell_original.shape[0]
