@@ -12,7 +12,9 @@ scripts = [
     'fourth_round_match_wbbuy_trfsell.py',
     'fourth_round_match_wbsell_trfbuy.py',
     'fifth_round_match_wbbuy_trfsell.py',
-    'fifth_round_match_wbsell_trfbuy.py'
+    'fifth_round_match_wbsell_trfbuy.py',
+    'sixth_round_match_wbbuy_trfsell.py',
+    'sixth_round_match_wbsell_trfbuy.py'
 ]
 
 for script in scripts:

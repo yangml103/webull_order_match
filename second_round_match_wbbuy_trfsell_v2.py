@@ -183,12 +183,16 @@ for idx_wb, wb_row in wb_sell_not_matching.iterrows():
         not_matching_wb.append(wb_row)
         seen_not_matching.add(idx_wb)
 
-        
 # Convert lists to DataFrames
 matching_wb_df = pd.DataFrame(matching_wb).drop_duplicates()
 matching_trf_df = pd.DataFrame(matching_trf).drop_duplicates()
 not_matching_wb_df = pd.DataFrame(not_matching_wb).drop_duplicates()
 not_matching_trf_df = pd.DataFrame(not_matching_trf).drop_duplicates()
+
+# Make sure no rows were lost 
+print(f'Matching WB rows: {matching_wb_df.shape[0]}, Not matching WB rows: {not_matching_wb_df.shape[0]}, Sum = {matching_wb_df.shape[0] + not_matching_wb_df.shape[0]}, Total WB rows: {num_rows_wb}')
+print(f'Matching TRF rows: {matching_trf_df.shape[0]}, Not matching TRF rows: {not_matching_trf_df.shape[0]}, Sum = {matching_trf_df.shape[0] + not_matching_trf_df.shape[0]}, Total TRF rows: {num_rows_trf}')
+
 
 # Save the DataFrames to CSV files
 output_dir = 'Second Round CSV Results WB BUY TRF SELL'

@@ -2,13 +2,16 @@ import pandas as pd
 from collections import defaultdict
 import copy 
 import os
-# Takes in nonmatching files after brute force program
-# Matches the non matching values using price point and volume
-# If a value in wb is found in the cumulative values of trf, append all the rows that make up the value
-# vice versa for trf 
 
-wb_sell_not_matching = pd.read_csv('First Round CSV Results WB SELL TRF BUY/wb_first_round_not_match_wb_sell_trf_buy.csv')
-trf_sell_not_matching = pd.read_csv('First Round CSV Results WB SELL TRF BUY/trf_first_round_not_match_wb_sell_trf_buy.csv')
+# Altered version of second round match 
+# If the sum of quantities for a broker, symbol for wb match the sum for the same broker, symbol for trf
+# it is matched together
+
+# NOTE: WORK IN PROGRESS
+
+
+wb_sell_not_matching = pd.read_csv('Sixth Round CSV Results WB SELL TRF BUY/wb_sixth_round_not_match_wb_sell_trf_buy.csv')
+trf_sell_not_matching = pd.read_csv('Sixth Round CSV Results WB SELL TRF BUY/trf_sixth_round_not_match_wb_sell_trf_buy.csv')
 
 # Sort the dataframes
 wb_sell_not_matching = wb_sell_not_matching.sort_values(by=['execbroker', 'symbol', 'strikeprice'])
@@ -86,6 +89,39 @@ for broker in trf_prices_dict:
 # if trf_prices_dict_copy[broker][symbol][strikeprice] is in wb_prices_dict[broker][symbol][avgpx],
 # append all rows in trf_prices_dict_copy[broker][symbol][strikeprice] to matching_trf
 # else append all rows in trf_prices_dict_copy[broker][symbol][strikeprice] to not_matching_trf
+# Initialize dictionaries to store total sums for each broker, symbol
+
+idx_wb = 0 
+num_rows_wb = wb_sell_not_matching.shape[0]
+idx_trf = 0
+num_rows_trf = trf_sell_not_matching.shape[0]
+wb_total_sums = defaultdict(lambda: defaultdict(float))
+trf_total_sums = defaultdict(lambda: defaultdict(float))
+
+# Iterate through wb_sell_not_matching and accumulate total sums
+while idx_wb < num_rows_wb:
+    wb_row = wb_sell_not_matching.iloc[idx_wb]
+    if wb_row['execbroker'] in common_brokers:
+        wb_total_sums[wb_row['execbroker']][wb_row['symbol']] += wb_row['strikeqty']
+    idx_wb += 1
+
+# Iterate through trf_sell_not_matching and accumulate total sums
+while idx_trf < num_rows_trf:
+    trf_row = trf_sell_not_matching.iloc[idx_trf]
+    if trf_row['ContraBroker'] in common_brokers:
+        trf_total_sums[trf_row['ContraBroker']][trf_row['Symbol']] += trf_row['CumQty']
+    idx_trf += 1
+
+# # Print the total sums for verification
+# print("WB Total Sums:")
+# for broker, symbols in wb_total_sums.items():
+#     for symbol, total_sum in symbols.items():
+#         print(f"Broker: {broker}, Symbol: {symbol}, Total Sum: {total_sum}")
+
+# print("TRF Total Sums:")
+# for broker, symbols in trf_total_sums.items():
+#     for symbol, total_sum in symbols.items():
+#         print(f"Broker: {broker}, Symbol: {symbol}, Total Sum: {total_sum}")
 
 
 matching_wb = []
@@ -97,37 +133,19 @@ num_rows_trf = trf_sell_not_matching.shape[0]
 
 
 # Pre-compute sets for faster lookups
-seen_matching = set()
-seen_not_matching = set()
+seen_matching_trf = set()
+seen_not_matching_trf = set()
 
-# Use a dictionary for faster wb_prices_dict lookups
-wb_prices_dict_flat = {(broker, symbol, avgpx): values 
-                       for broker, symbols in wb_prices_dict.items()
-                       for symbol, prices in symbols.items()
-                       for avgpx, values in prices.items()}
-
-# Iterate through trf_sell_not_matching once
 for idx_trf, trf_row in trf_sell_not_matching.iterrows():
     broker = trf_row['ContraBroker']
     symbol = trf_row['Symbol']
     avgpx = float(trf_row['AvgPx'])
     quantity = trf_row['CumQty']
-    
-    key = (broker, symbol, avgpx)
-    trf_individual_values = trf_prices_dict_copy[broker][symbol][avgpx]
-    trf_cumulative_values = trf_prices_dict[broker][symbol][avgpx]
-
-    if idx_trf in seen_matching:
+    trf_individual_values = trf_prices_dict_copy[broker][symbol]
+    trf_cumulative_values = trf_prices_dict[broker][symbol]
+    if idx_trf in seen_matching_trf:
         continue
-
-    wb_values = wb_prices_dict_flat.get(key, [])
-    if isinstance(wb_values, (int, float)):
-        wb_values = [wb_values]
-
-
-    if len(wb_values) != 0 and trf_cumulative_values in wb_values:
-        #print(f'trf cum: {trf_cumulative_values}, \n trf ind: {trf_individual_values}, \n wb: {wb_values}')
-
+    if wb_total_sums[broker][symbol] == trf_total_sums[broker][symbol]:
         for count, value in enumerate(trf_individual_values):
             temp_idx = idx_trf + count
             if temp_idx >= len(trf_sell_not_matching):
@@ -135,21 +153,15 @@ for idx_trf, trf_row in trf_sell_not_matching.iterrows():
             temp_row = trf_sell_not_matching.iloc[temp_idx]
 
             matching_trf.append(temp_row)
-            seen_matching.add(temp_idx)
-
+            seen_matching_trf.add(temp_idx)
     else:
         not_matching_trf.append(trf_row)
-        seen_not_matching.add(idx_trf)
+        seen_not_matching_trf.add(idx_trf)
 
 # Pre-compute sets for faster lookups
-seen_matching = set()
-seen_not_matching = set()
+seen_matching_wb = set()
+seen_not_matching_wb = set()
 
-# Use a dictionary for faster trf_prices_dict lookups
-trf_prices_dict_flat = {(broker, symbol, avgpx): values 
-                        for broker, symbols in trf_prices_dict.items()
-                        for symbol, prices in symbols.items()
-                        for avgpx, values in prices.items()}
 # Iterate through wb_sell_not_matching once
 for idx_wb, wb_row in wb_sell_not_matching.iterrows():
     broker = wb_row['execbroker']
@@ -157,18 +169,15 @@ for idx_wb, wb_row in wb_sell_not_matching.iterrows():
     avgpx = float(wb_row['strikeprice'])
     quantity = wb_row['strikeqty']
     
-    key = (broker, symbol, avgpx)
-    wb_individual_values = wb_prices_dict_copy[broker][symbol][avgpx]
-    wb_cumulative_values = wb_prices_dict[broker][symbol][avgpx]
+    key = (broker, symbol)
+    wb_individual_values = wb_prices_dict_copy[broker][symbol]
+    wb_cumulative_values = wb_prices_dict[broker][symbol]
 
-    if idx_wb in seen_matching:
+    if idx_wb in seen_matching_wb:
         continue
 
-    trf_values = trf_prices_dict_flat.get(key, [])
-    if isinstance(trf_values, (int, float)):
-        trf_values = [trf_values]
 
-    if len(trf_values) != 0 and wb_cumulative_values in trf_values:
+    if wb_total_sums[broker][symbol] == trf_total_sums[broker][symbol]:
         #print(f'trf cum: {trf_cumulative_values}, \n trf ind: {trf_individual_values}, \n wb: {wb_values}')
 
         for count, value in enumerate(wb_individual_values):
@@ -177,30 +186,46 @@ for idx_wb, wb_row in wb_sell_not_matching.iterrows():
                 break
             temp_row = wb_sell_not_matching.iloc[temp_idx]
             matching_wb.append(temp_row)
-            seen_matching.add(temp_idx)
+            seen_matching_wb.add(temp_idx)
 
     else:
         not_matching_wb.append(wb_row)
-        seen_not_matching.add(idx_wb)
+        seen_not_matching_wb.add(idx_wb)
+        
+idx_wb = 0
+idx_trf = 0 
+
+while idx_wb < num_rows_wb:
+    if idx_wb not in seen_matching_wb:
+        wb_row = wb_sell_not_matching.iloc[idx_wb]
+        not_matching_wb.append(wb_row)
+    idx_wb += 1
+
+while idx_trf < num_rows_trf:
+    if idx_trf not in seen_matching_trf:
+        trf_row = trf_sell_not_matching.iloc[idx_trf]
+        not_matching_trf.append(trf_row)
+    idx_trf += 1
+
+
 # Convert lists to DataFrames
 matching_wb_df = pd.DataFrame(matching_wb).drop_duplicates()
 matching_trf_df = pd.DataFrame(matching_trf).drop_duplicates()
 not_matching_wb_df = pd.DataFrame(not_matching_wb).drop_duplicates()
 not_matching_trf_df = pd.DataFrame(not_matching_trf).drop_duplicates()
-        
+
 # Make sure no rows were lost 
 print(f'Matching WB rows: {matching_wb_df.shape[0]}, Not matching WB rows: {not_matching_wb_df.shape[0]}, Sum = {matching_wb_df.shape[0] + not_matching_wb_df.shape[0]}, Total WB rows: {num_rows_wb}')
 print(f'Matching TRF rows: {matching_trf_df.shape[0]}, Not matching TRF rows: {not_matching_trf_df.shape[0]}, Sum = {matching_trf_df.shape[0] + not_matching_trf_df.shape[0]}, Total TRF rows: {num_rows_trf}')
 
-        
 
 # Save the DataFrames to CSV files
-output_dir = 'Second Round CSV Results WB SELL TRF BUY'
+output_dir = 'Seventh Round CSV Results WB SELL TRF BUY'
 os.makedirs(output_dir, exist_ok=True)
-matching_wb_df.to_csv(os.path.join(output_dir, 'wb_second_round_match_wb_sell_trf_buy.csv'), index=False)
-matching_trf_df.to_csv(os.path.join(output_dir, 'trf_second_round_match_wb_sell_trf_buy.csv'), index=False)
-not_matching_wb_df.to_csv(os.path.join(output_dir, 'wb_second_round_not_match_wb_sell_trf_buy.csv'), index=False)
-not_matching_trf_df.to_csv(os.path.join(output_dir, 'trf_second_round_not_match_wb_sell_trf_buy.csv'), index=False)
+matching_wb_df.to_csv(os.path.join(output_dir, 'wb_seventh_round_match_wb_sell_trf_buy.csv'), index=False)
+matching_trf_df.to_csv(os.path.join(output_dir, 'trf_seventh_round_match_wb_sell_trf_buy.csv'), index=False)
+not_matching_wb_df.to_csv(os.path.join(output_dir, 'wb_seventh_round_not_match_wb_sell_trf_buy.csv'), index=False)
+not_matching_trf_df.to_csv(os.path.join(output_dir, 'trf_seventh_round_not_match_wb_sell_trf_buy.csv'), index=False)
 
 # Calculate statistics
 total_wb_rows = wb_sell_not_matching.shape[0]
@@ -212,7 +237,7 @@ wb_matching_percentage = (matching_wb_rows / total_wb_rows) * 100
 trf_matching_percentage = (matching_trf_rows / total_trf_rows) * 100
 
 # Print statistics
-print(f'Second Round Matching Statistics')
+print(f'Seventh Round Matching Statistics')
 print(f"Total WB rows: {total_wb_rows}")
 print(f"Total TRF rows: {total_trf_rows}")
 print(f"Matching WB rows: {matching_wb_rows}")
