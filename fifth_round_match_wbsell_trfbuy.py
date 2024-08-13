@@ -182,8 +182,9 @@ for idx_trf1 in range(num_rows_trf):
     if not found:
         not_matching_trf.append(trf_row)
 
-
-
+# Make sure no rows were lost 
+assert len(matching_wb) + len(not_matching_wb) == num_rows_wb
+assert len(matching_trf) + len(not_matching_trf) == num_rows_trf 
 
 # Convert lists to DataFrames
 matching_wb_df = pd.DataFrame(matching_wb).drop_duplicates()

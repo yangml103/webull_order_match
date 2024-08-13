@@ -137,7 +137,7 @@ while idx_wb < num_rows_wb:
         for val in range(idx_wb, idx_wb+num_orders_wb,1):
             wb_row = wb_sell_not_matching.iloc[val]
             matching_wb.append(wb_row)
-        idx_wb += num_orders_wb
+        idx_wb += num_orders_wb -1
             
     else:
         num_orders_wb = sum(len(lst) for lst in wb_prices_dict_copy[broker][symbol].values())
@@ -149,7 +149,7 @@ while idx_wb < num_rows_wb:
         for val in range(idx_wb, idx_wb+num_orders_wb):
             wb_row = wb_sell_not_matching.iloc[val]
             not_matching_wb.append(wb_row)
-        idx_wb += num_orders_wb
+        idx_wb += num_orders_wb -1
         
         
 while idx_trf < num_rows_trf:
@@ -169,7 +169,7 @@ while idx_trf < num_rows_trf:
         for val in range(idx_trf, idx_trf+num_orders_trf):
             trf_row = trf_sell_not_matching.iloc[val]
             matching_trf.append(trf_row)
-        idx_trf += num_orders_trf
+        idx_trf += num_orders_trf -1
     else:
         num_orders_trf = sum(len(lst) for lst in trf_prices_dict_copy[broker][symbol].values())
         
@@ -179,8 +179,12 @@ while idx_trf < num_rows_trf:
         for val in range(idx_trf, idx_trf+num_orders_trf):
             trf_row = trf_sell_not_matching.iloc[val]
             not_matching_trf.append(trf_row)
-        idx_trf += num_orders_trf
+        idx_trf += num_orders_trf -1 
 
+
+# Make sure no rows were lost 
+assert len(matching_wb) + len(not_matching_wb) == num_rows_wb
+assert len(matching_trf) + len(not_matching_trf) == num_rows_trf 
 
 # Convert lists to DataFrames
 matching_wb_df = pd.DataFrame(matching_wb).drop_duplicates()

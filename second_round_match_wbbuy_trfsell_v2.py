@@ -183,7 +183,10 @@ for idx_wb, wb_row in wb_sell_not_matching.iterrows():
         not_matching_wb.append(wb_row)
         seen_not_matching.add(idx_wb)
 
-        
+# Make sure no rows were lost 
+assert len(matching_wb) + len(not_matching_wb) == num_rows_wb
+assert len(matching_trf) + len(not_matching_trf) == num_rows_trf 
+
 # Convert lists to DataFrames
 matching_wb_df = pd.DataFrame(matching_wb).drop_duplicates()
 matching_trf_df = pd.DataFrame(matching_trf).drop_duplicates()
