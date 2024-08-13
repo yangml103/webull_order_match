@@ -1,7 +1,7 @@
 import pandas as pd
 from collections import defaultdict
 import numpy as np
-
+import os
 # Takes in nonmatching files after price point match program 'v4' wb buy trf sell 
 # Matches the non matching values using price point and volume
 # If a list of quantities in TRF can sum up to a value in wb, append the combinations 
@@ -63,8 +63,8 @@ def combinationSum3(candidates, target):
 
 
 # Read in the dataframes with specified dtypes
-wb_not_matching = pd.read_csv('wb_sell_trf_buy_not_matching_wb_merge_new_filtered_v4.csv', low_memory=False)
-trf_not_matching = pd.read_csv('wb_sell_trf_buy_not_matching_trf_merge_new_filtered_v4.csv', low_memory=False)
+wb_not_matching = pd.read_csv('Fourth Round CSV Results WB SELL TRF BUY/wb_fourth_round_not_match_wb_sell_trf_buy.csv', low_memory=False)
+trf_not_matching = pd.read_csv('Fourth Round CSV Results WB SELL TRF BUY/trf_fourth_round_not_match_wb_sell_trf_buy.csv', low_memory=False)
 
 
 # Sort the dataframes
@@ -192,10 +192,13 @@ not_matching_wb_df = pd.DataFrame(not_matching_wb).drop_duplicates()
 not_matching_trf_df = pd.DataFrame(not_matching_trf).drop_duplicates()
 
 # Save the DataFrames to CSV files
-matching_wb_df.to_csv('wb_sell_trf_buy_matching_wb_merge_new_filtered_v5.csv', index=False)
-matching_trf_df.to_csv('wb_sell_trf_buy_matching_trf_merge_new_filtered_v5.csv', index=False)
-not_matching_wb_df.to_csv('wb_sell_trf_buy_not_matching_wb_merge_new_filtered_v5.csv', index=False)
-not_matching_trf_df.to_csv('wb_sell_trf_buy_not_matching_trf_merge_new_filtered_v5.csv', index=False)
+output_dir = 'Fifth Round CSV Results WB SELL TRF BUY'
+os.makedirs(output_dir, exist_ok=True)
+
+matching_wb_df.to_csv(os.path.join(output_dir, 'wb_fifth_round_match_wb_sell_trf_buy.csv'), index=False)
+matching_trf_df.to_csv(os.path.join(output_dir, 'trf_fifth_round_match_wb_sell_trf_buy.csv'), index=False)
+not_matching_wb_df.to_csv(os.path.join(output_dir, 'wb_fifth_round_not_match_wb_sell_trf_buy.csv'), index=False)
+not_matching_trf_df.to_csv(os.path.join(output_dir, 'trf_fifth_round_not_match_wb_sell_trf_buy.csv'), index=False)
 
 # Calculate statistics
 total_wb_rows = wb_not_matching.shape[0]
