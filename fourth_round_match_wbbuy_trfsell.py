@@ -114,6 +114,8 @@ not_matching_trf = []
 not_matching_wb = []
 num_rows_wb = wb_sell_not_matching.shape[0]
 num_rows_trf = trf_sell_not_matching.shape[0]
+seen_idx_wb = set()
+seen_idx_trf = set()
 
 idx_wb, idx_trf = 0,0
 # Iterate through wb_buy_trf_sell_not_matching_wb_merge_new_filtered to classify rows
@@ -127,7 +129,6 @@ while idx_wb < num_rows_wb:
     trf_avgpx_sum = trf_avgpx_sums[broker][symbol]
     wb_avgpx_sum = wb_avgpx_sums[broker][symbol]
     
-       
     if trf_avgpx_sum == wb_avgpx_sum and trf_avgpx_sum != 0:
         
 
@@ -137,6 +138,7 @@ while idx_wb < num_rows_wb:
         for val in range(idx_wb, idx_wb+num_orders_wb,1):
             wb_row = wb_sell_not_matching.iloc[val]
             matching_wb.append(wb_row)
+            seen_idx_wb.add(val)
         idx_wb += num_orders_wb 
             
     else:
@@ -169,6 +171,7 @@ while idx_trf < num_rows_trf:
         for val in range(idx_trf, idx_trf+num_orders_trf):
             trf_row = trf_sell_not_matching.iloc[val]
             matching_trf.append(trf_row)
+            seen_idx_trf.add(val)
         idx_trf += num_orders_trf 
     else:
         num_orders_trf = sum(len(lst) for lst in trf_prices_dict_copy[broker][symbol].values())
@@ -184,6 +187,21 @@ while idx_trf < num_rows_trf:
 # The code is skipping some rows, possible fix could be to iterate through matching lists and append values that 
 # do not show up in the matching lists to double check 
 
+idx_wb = 0
+idx_trf = 0 
+
+while idx_wb < num_rows_wb:
+    if idx_wb not in seen_idx_wb:
+        wb_row = wb_sell_not_matching.iloc[idx_wb]
+        not_matching_wb.append(wb_row)
+    idx_wb += 1
+
+while idx_trf < num_rows_trf:
+    if idx_trf not in seen_idx_trf:
+        trf_row = trf_sell_not_matching.iloc[idx_trf]
+        not_matching_trf.append(trf_row)
+    idx_trf += 1
+
 # Convert lists to DataFrames
 matching_wb_df = pd.DataFrame(matching_wb).drop_duplicates()
 matching_trf_df = pd.DataFrame(matching_trf).drop_duplicates()
@@ -192,8 +210,8 @@ not_matching_trf_df = pd.DataFrame(not_matching_trf).drop_duplicates()
 
 
 # Make sure no rows were lost 
-print(f'Matching WB rows: {len(matching_wb)}, Not matching WB rows: {len(not_matching_wb)}, Sum = {len(matching_wb) + len(not_matching_wb)}, Total WB rows: {num_rows_wb}')
-print(f'Matching TRF rows: {len(matching_trf)}, Not matching TRF rows: {len(not_matching_trf)}, Sum = {len(matching_trf) + len(not_matching_trf)}, Total TRF rows: {num_rows_trf}')
+print(f'Matching WB rows: {matching_wb_df.shape[0]}, Not matching WB rows: {not_matching_wb_df.shape[0]}, Sum = {matching_wb_df.shape[0] + not_matching_wb_df.shape[0]}, Total WB rows: {num_rows_wb}')
+print(f'Matching TRF rows: {matching_trf_df.shape[0]}, Not matching TRF rows: {not_matching_trf_df.shape[0]}, Sum = {matching_trf_df.shape[0] + not_matching_trf_df.shape[0]}, Total TRF rows: {num_rows_trf}')
 
 
 # Save the DataFrames to CSV files

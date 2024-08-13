@@ -64,8 +64,8 @@ def combinationSum3(candidates, target):
 # Read in the dataframes with specified dtypes
 # wb_not_matching = pd.read_csv('Fourth Round CSV Results WB BUY TRF SELL/wb_fourth_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
 # trf_not_matching = pd.read_csv('Fourth Round CSV Results WB BUY TRF SELL/trf_fourth_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
-wb_not_matching = pd.read_csv('Third Round CSV Results WB BUY TRF SELL/wb_third_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
-trf_not_matching = pd.read_csv('Third Round CSV Results WB BUY TRF SELL/trf_third_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
+wb_not_matching = pd.read_csv('Fourth Round CSV Results WB BUY TRF SELL/wb_fourth_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
+trf_not_matching = pd.read_csv('Fourth Round CSV Results WB BUY TRF SELL/trf_fourth_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
 
 # Sort the dataframes
 wb_not_matching = wb_not_matching.sort_values(by=['execbroker', 'symbol', 'strikeprice'])
@@ -190,10 +190,8 @@ not_matching_wb_df = pd.DataFrame(not_matching_wb).drop_duplicates()
 not_matching_trf_df = pd.DataFrame(not_matching_trf).drop_duplicates()
 
 # Make sure no rows were lost 
-# assert len(matching_wb) + len(not_matching_wb) == num_rows_wb
-# assert len(matching_trf) + len(not_matching_trf) == num_rows_trf 
-print(f'Matching WB rows: {len(matching_wb)}, Not matching WB rows: {len(not_matching_wb)}, Sum = {len(matching_wb) + len(not_matching_wb)}, Total WB rows: {num_rows_wb}')
-print(f'Matching TRF rows: {len(matching_trf)}, Not matching TRF rows: {len(not_matching_trf)}, Sum = {len(matching_trf) + len(not_matching_trf)}, Total TRF rows: {num_rows_trf}')
+print(f'Matching WB rows: {matching_wb_df.shape[0]}, Not matching WB rows: {not_matching_wb_df.shape[0]}, Sum = {matching_wb_df.shape[0] + not_matching_wb_df.shape[0]}, Total WB rows: {num_rows_wb}')
+print(f'Matching TRF rows: {matching_trf_df.shape[0]}, Not matching TRF rows: {not_matching_trf_df.shape[0]}, Sum = {matching_trf_df.shape[0] + not_matching_trf_df.shape[0]}, Total TRF rows: {num_rows_trf}')
 
 # Save the DataFrames to CSV files
 output_dir = 'Fifth Round CSV Results WB BUY TRF SELL'
