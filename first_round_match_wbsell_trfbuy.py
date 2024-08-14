@@ -94,8 +94,7 @@ for idx_trf in range(num_rows_trf):
     if wb_individual_values is not None and quantity in wb_individual_values:
         matching_trf.append(trf_row)
         wb_individual_values.remove(quantity)  # Remove the matched quantity
-        if not wb_individual_values:  # If the list is empty, set it to None
-            wb_prices_dict_copy[broker][symbol][avgpx] = None
+
     else:
         not_matching_trf.append(trf_row)
     
@@ -110,8 +109,7 @@ for idx_wb in range(num_rows_wb):
     if trf_individual_values is not None and quantity in trf_individual_values:
         matching_wb.append(wb_row)
         trf_individual_values.remove(quantity)  # Remove the matched quantity
-        if not trf_individual_values:  # If the list is empty, set it to None
-            trf_prices_dict_copy[broker][symbol][avgpx] = None
+
     else:
         not_matching_wb.append(wb_row)
 
