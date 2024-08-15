@@ -2,15 +2,14 @@ import pandas as pd
 from collections import defaultdict
 import copy 
 import os
-# Takes in nonmatching files after price point match program 'v2' wb sell trf buy
-# Matches the non matching values using price point and volume
-# wb contains the sums, trf contains individual orders
-# keep running count of total and average price for trf, if running total and count == values in wb,
-# append all the values 
+
+#NOTE This version attempts to implement the changes suggested by Grayman - get TOTAL QTY 
+# of each broker, symbol, and calculate the total price - price*qty, if wb price and trf price
+# are within $5 of each other, then we consider it a match 
 
 # Read in the dataframes 
-wb_sell_not_matching = pd.read_csv('Second Round CSV Results WB SELL TRF BUY/wb_second_round_not_match_wb_sell_trf_buy.csv')
-trf_sell_not_matching = pd.read_csv('Second Round CSV Results WB SELL TRF BUY/trf_second_round_not_match_wb_sell_trf_buy.csv')
+wb_sell_not_matching = pd.read_csv('Second Round CSV Results WB SELL TRF BUY/wb_second_round_not_match_wb_sell_trf_buy.csv', low_memory=False)
+trf_sell_not_matching = pd.read_csv('Second Round CSV Results WB SELL TRF BUY/trf_second_round_not_match_wb_sell_trf_buy.csv', low_memory=False)
 
 # Sort the dataframes
 wb_sell_not_matching = wb_sell_not_matching.sort_values(by=['execbroker', 'symbol', 'strikeprice'])
@@ -78,9 +77,28 @@ for broker in trf_prices_dict:
         for avgpx in trf_prices_dict[broker][symbol]:
             trf_prices_dict[broker][symbol][avgpx] = sum(trf_prices_dict[broker][symbol][avgpx])
             
-#print(wb_prices_dict['CDRG']['ACON'], '\n')
-#print(trf_prices_dict_copy['CDRG']['ACON'])
+#print(wb_prices_dict['CDRG']['AEMD'][0.53], '\n')
+#print(wb_prices_dict_copy['CDRG']['AEMD'])
 
+wb_price_times_cum_qty = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))  
+trf_price_times_cum_qty = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+
+# Calculate the price times cumulative quantity for each broker and symbol 
+for broker in wb_prices_dict:
+    for symbol in wb_prices_dict[broker]:
+        temp = []
+        for strikeprice in wb_prices_dict[broker][symbol]:
+            temp.append(wb_prices_dict[broker][symbol][strikeprice] * strikeprice) 
+        wb_price_times_cum_qty[broker][symbol] = int(sum(temp)) # SAVE AS INT TO REDUCE MEMORY CONSUMPTION
+#print(wb_price_times_cum_qty['CDRG']['AEMD'])
+
+# Calculate the price times cumulative quantity for each broker and symbol 
+for broker in trf_prices_dict:
+    for symbol in trf_prices_dict[broker]:
+        temp = []
+        for avgpx in trf_prices_dict[broker][symbol]:
+            temp.append(trf_prices_dict[broker][symbol][avgpx] * avgpx) 
+        trf_price_times_cum_qty[broker][symbol] = int(sum(temp)) # SAVE AS INT TO REDUCE MEMORY CONSUMPTION
 
 matching_wb = []
 matching_trf = []
@@ -88,15 +106,11 @@ not_matching_trf = []
 not_matching_wb = []
 num_rows_wb = wb_sell_not_matching.shape[0]
 num_rows_trf = trf_sell_not_matching.shape[0]
-first_idx = 0 
 
-temp_idx = 0 
+wb_append_set = set()
+trf_append_set = set()
 
-trf_append_list = [] # keeps track of trf rows that need to be appended to trf match
-# Iterate through wb_buy_trf_sell_not_matching_wb_merge_new_filtered to classify rows
-past_broker, past_symbol = None, None
-trf_qty_list = []
-remaining_trf_qty_list = []
+maximum_difference = 50 # maximum acceptable difference between wb and trf price 
 
 for idx_wb in range(num_rows_wb):
     wb_row = wb_sell_not_matching.iloc[idx_wb]
@@ -105,62 +119,38 @@ for idx_wb in range(num_rows_wb):
     avgpx = float(wb_row['strikeprice'])
     quantity = wb_row['strikeqty']
     #print(f'{broker}, {symbol}, {avgpx}, {quantity}, {past_broker}, {past_symbol}')
+    wb_price_times_cum_qty_val = wb_price_times_cum_qty[broker][symbol]
+    trf_price_times_cum_qty_val = trf_price_times_cum_qty[broker][symbol]
     
-    if past_broker is None and past_symbol is None:
-        past_broker = broker
-        past_symbol = symbol
-        trf_individual_values = trf_prices_dict_copy[broker][symbol]
-        trf_qty_list = [(price, qty) for price, qtys in trf_individual_values.items() for qty in qtys]
-        remaining_trf_qty_list = trf_qty_list.copy()
-    elif past_broker != broker or past_symbol != symbol:
-        past_broker = broker
-        past_symbol = symbol
-        trf_individual_values = trf_prices_dict_copy[broker][symbol]
-        trf_qty_list = [(price, qty) for price, qtys in trf_individual_values.items() for qty in qtys]
-        remaining_trf_qty_list = trf_qty_list.copy()
+    
+    if (broker, symbol) not in wb_append_set and isinstance(wb_price_times_cum_qty_val, int) and isinstance(trf_price_times_cum_qty_val, int) and abs(wb_price_times_cum_qty_val - trf_price_times_cum_qty_val) <= maximum_difference:
+        wb_append_set.add((broker, symbol))
+        trf_append_set.add((broker, symbol))
 
-    # Iterate through remaining_trf_qty_list, if a sub combination adds up to quantity, add row to matching
-    # and remove rows from remaining_trf_qty_list and continue     
-    running_count = 0 
-    temp_idx = 0
-    temp_list = [] 
-    
-    wb_check = False
-    while temp_idx < len(remaining_trf_qty_list):
-        running_count += remaining_trf_qty_list[temp_idx][1]
-        temp_list.append((broker, symbol, remaining_trf_qty_list[temp_idx][0], remaining_trf_qty_list[temp_idx][1]))
-        if running_count == quantity:
-            matching_wb.append(wb_row)
-            temp_idx += 1 
-            trf_append_list.append(temp_list)
-            #print(f'trf_append_list: {trf_append_list}')
-            #print(f'Appended: {wb_row}')
-            wb_check = True
-            remaining_trf_qty_list = remaining_trf_qty_list[temp_idx:]
-            break
-        temp_idx += 1
-    #print(f'remaining_trf_qty_list: {remaining_trf_qty_list}')
-    if not wb_check:
+idx_wb = 0
+idx_trf = 0
+
+while idx_wb < num_rows_wb:
+    wb_row = wb_sell_not_matching.iloc[idx_wb]
+    broker = wb_row['execbroker']
+    symbol = wb_row['symbol']
+    if (broker, symbol) in wb_append_set:
+        matching_wb.append(wb_row)
+    else:
         not_matching_wb.append(wb_row)
-        
-#print(trf_append_list)
-# Flatten trf_append_list to make it easier to check for membership
-flattened_trf_append_list = [item for sublist in trf_append_list for item in sublist]
+    idx_wb += 1
 
-# Iterate through trf_sell_not_matching and add rows to matching_trf if they are in flattened_trf_append_list
-for idx_trf in range(num_rows_trf):
+
+while idx_trf < num_rows_trf:
     trf_row = trf_sell_not_matching.iloc[idx_trf]
     broker = trf_row['ContraBroker']
     symbol = trf_row['Symbol']
-    price = trf_row['AvgPx']
-    quantity = trf_row['CumQty']
-    
-    if (broker, symbol, price, quantity) in flattened_trf_append_list:
+    if (broker, symbol) in trf_append_set:
         matching_trf.append(trf_row)
-        flattened_trf_append_list.remove((broker, symbol, price, quantity))
-
     else:
         not_matching_trf.append(trf_row)
+    idx_trf += 1
+
 
 # Convert lists to DataFrames
 matching_wb_df = pd.DataFrame(matching_wb).drop_duplicates()
@@ -182,6 +172,7 @@ matching_trf_df.to_csv(os.path.join(output_dir, 'trf_third_round_match_wb_sell_t
 not_matching_wb_df.to_csv(os.path.join(output_dir, 'wb_third_round_not_match_wb_sell_trf_buy.csv'), index=False)
 not_matching_trf_df.to_csv(os.path.join(output_dir, 'trf_third_round_not_match_wb_sell_trf_buy.csv'), index=False)
 
+
 # Calculate statistics
 total_wb_rows = wb_sell_not_matching.shape[0]
 total_trf_rows = trf_sell_not_matching.shape[0]
@@ -192,7 +183,7 @@ wb_matching_percentage = (matching_wb_rows / total_wb_rows) * 100
 trf_matching_percentage = (matching_trf_rows / total_trf_rows) * 100
 
 # Print statistics
-print(f'Third Round Matching Statistics')
+print(f'Third Round Matching Statistics - WB SELL TRF BUY')
 print(f"Total WB rows: {total_wb_rows}")
 print(f"Total TRF rows: {total_trf_rows}")
 print(f"Matching WB rows: {matching_wb_rows}")

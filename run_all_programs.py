@@ -5,16 +5,12 @@ import time
 scripts = [
     'first_round_match_wbbuy_trfsell.py',
     'first_round_match_wbsell_trfbuy.py',
-    'second_round_match_wbbuy_trfsell_v2.py',
-    'second_round_match_wbsell_trfbuy_v2.py', 
-    'third_round_match_v2_wbbuy_trfsell.py',
-    'third_round_match_v2_wbsell_trfbuy.py',
+    'second_round_match_v3_wbbuy_trfsell.py',
+    'second_round_match_v3_wbsell_trfbuy.py', 
+    'third_round_match_v3_wbbuy_trfsell.py',
+    'third_round_match_v3_wbsell_trfbuy.py',
     'fourth_round_match_wbbuy_trfsell.py',
-    'fourth_round_match_wbsell_trfbuy.py',
-    'fifth_round_match_wbbuy_trfsell.py',
-    'fifth_round_match_wbsell_trfbuy.py',
-    'sixth_round_match_wbbuy_trfsell.py',
-    'sixth_round_match_wbsell_trfbuy.py'
+    'fourth_round_match_wbsell_trfbuy.py'
 ]
 
 for script in scripts:
