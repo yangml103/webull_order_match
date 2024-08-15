@@ -110,7 +110,7 @@ num_rows_trf = trf_sell_not_matching.shape[0]
 wb_append_set = set()
 trf_append_set = set()
 
-maximum_difference = 5 # maximum acceptable difference between wb and trf price 
+maximum_difference = 50 # maximum acceptable difference between wb and trf price 
 
 for idx_wb in range(num_rows_wb):
     wb_row = wb_sell_not_matching.iloc[idx_wb]
@@ -183,7 +183,7 @@ wb_matching_percentage = (matching_wb_rows / total_wb_rows) * 100
 trf_matching_percentage = (matching_trf_rows / total_trf_rows) * 100
 
 # Print statistics
-print(f'Third Round Matching Statistics')
+print(f'Third Round Matching Statistics - WB SELL TRF BUY')
 print(f"Total WB rows: {total_wb_rows}")
 print(f"Total TRF rows: {total_trf_rows}")
 print(f"Matching WB rows: {matching_wb_rows}")

@@ -8,8 +8,9 @@ import os
 # are within $5 of each other, then we consider it a match 
 
 # Read in the dataframes 
-wb_sell_not_matching = pd.read_csv('Second Round CSV Results WB BUY TRF SELL/wb_second_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
-trf_sell_not_matching = pd.read_csv('Second Round CSV Results WB BUY TRF SELL/trf_second_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
+wb_sell_not_matching = pd.read_csv('Second Round CSV Results WB BUY TRF SELL - TEST/wb_second_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
+trf_sell_not_matching = pd.read_csv('Second Round CSV Results WB BUY TRF SELL - TEST/trf_second_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
+
 
 # Sort the dataframes
 wb_sell_not_matching = wb_sell_not_matching.sort_values(by=['execbroker', 'symbol', 'strikeprice'])
@@ -110,7 +111,7 @@ num_rows_trf = trf_sell_not_matching.shape[0]
 wb_append_set = set()
 trf_append_set = set()
 
-maximum_difference = 5 # maximum acceptable difference between wb and trf price 
+maximum_difference = 50 # maximum acceptable difference between wb and trf price 
 
 for idx_wb in range(num_rows_wb):
     wb_row = wb_sell_not_matching.iloc[idx_wb]
@@ -183,7 +184,7 @@ wb_matching_percentage = (matching_wb_rows / total_wb_rows) * 100
 trf_matching_percentage = (matching_trf_rows / total_trf_rows) * 100
 
 # Print statistics
-print(f'Third Round Matching Statistics')
+print(f'Third Round Matching Statistics - WB BUY TRF SELL')
 print(f"Total WB rows: {total_wb_rows}")
 print(f"Total TRF rows: {total_trf_rows}")
 print(f"Matching WB rows: {matching_wb_rows}")
