@@ -14,5 +14,5 @@ Code for matching TRF and WB internal order data.
 
 Note:
 
-Estimated match rate for WB = 97%, TRF = 80%
+Estimated match rate for WB = 80%, TRF = 80%
 Run time ~ 10 minutes 
