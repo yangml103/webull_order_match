@@ -8,8 +8,8 @@ import os
 # are within $5 of each other, then we consider it a match 
 
 # Read in the dataframes 
-wb_sell_not_matching = pd.read_csv('Second Round CSV Results WB BUY TRF SELL - TEST/wb_second_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
-trf_sell_not_matching = pd.read_csv('Second Round CSV Results WB BUY TRF SELL - TEST/trf_second_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
+wb_sell_not_matching = pd.read_csv('Second Round CSV Results WB BUY TRF SELL/wb_second_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
+trf_sell_not_matching = pd.read_csv('Second Round CSV Results WB BUY TRF SELL/trf_second_round_not_match_wb_buy_trf_sell.csv', low_memory=False)
 
 
 # Sort the dataframes

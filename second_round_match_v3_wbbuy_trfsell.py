@@ -164,7 +164,7 @@ print(f'Matching TRF rows: {matching_trf_df.shape[0]}, Not matching TRF rows: {n
 
 
 # Save the DataFrames to CSV files
-output_dir = 'Second Round CSV Results WB BUY TRF SELL - TEST'
+output_dir = 'Second Round CSV Results WB BUY TRF SELL'
 os.makedirs(output_dir, exist_ok=True)
 
 matching_wb_df.to_csv(os.path.join(output_dir, 'wb_second_round_match_wb_buy_trf_sell.csv'), index=False)

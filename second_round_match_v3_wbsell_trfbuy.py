@@ -164,13 +164,13 @@ print(f'Matching TRF rows: {matching_trf_df.shape[0]}, Not matching TRF rows: {n
 
 
 # Save the DataFrames to CSV files
-output_dir = 'Second Round CSV Results WB BUY TRF SELL - TEST'
+output_dir = 'Second Round CSV Results WB SELL TRF BUY'
 os.makedirs(output_dir, exist_ok=True)
 
-matching_wb_df.to_csv(os.path.join(output_dir, 'wb_second_round_match_wb_buy_trf_sell.csv'), index=False)
-matching_trf_df.to_csv(os.path.join(output_dir, 'trf_second_round_match_wb_buy_trf_sell.csv'), index=False)
-not_matching_wb_df.to_csv(os.path.join(output_dir, 'wb_second_round_not_match_wb_buy_trf_sell.csv'), index=False)
-not_matching_trf_df.to_csv(os.path.join(output_dir, 'trf_second_round_not_match_wb_buy_trf_sell.csv'), index=False)
+matching_wb_df.to_csv(os.path.join(output_dir, 'wb_second_round_match_wb_sell_trf_buy.csv'), index=False)
+matching_trf_df.to_csv(os.path.join(output_dir, 'trf_second_round_match_wb_sell_trf_buy.csv'), index=False)
+not_matching_wb_df.to_csv(os.path.join(output_dir, 'wb_second_round_not_match_wb_sell_trf_buy.csv'), index=False)
+not_matching_trf_df.to_csv(os.path.join(output_dir, 'trf_second_round_not_match_wb_sell_trf_buy.csv'), index=False)
 
 
 # Calculate statistics
@@ -183,7 +183,7 @@ wb_matching_percentage = (matching_wb_rows / total_wb_rows) * 100
 trf_matching_percentage = (matching_trf_rows / total_trf_rows) * 100
 
 # Print statistics
-print(f'Second Round Matching Statistics - WB BUY TRF SELL')
+print(f'Second Round Matching Statistics - WB SELL TRF BUY')
 print(f"Total WB rows: {total_wb_rows}")
 print(f"Total TRF rows: {total_trf_rows}")
 print(f"Matching WB rows: {matching_wb_rows}")
